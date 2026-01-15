@@ -63,8 +63,17 @@ const Login = () => {
 
       if (error) {
         setSubmitStatus('error');
-        if (error.message.includes('Invalid login credentials') || error.message.includes('Invalid credentials')) {
+        console.error('Full error object:', error);
+        console.error('Error code:', error.status);
+        console.error('Error message:', error.message);
+        
+        // Handle different error types
+        if (error.message.includes('Invalid login credentials') || 
+            error.message.includes('Invalid credentials') ||
+            error.status === 400) {
           setErrorMessage(t.auth.errors.invalidCredentials);
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrorMessage('Por favor confirma tu email antes de iniciar sesión');
         } else {
           setErrorMessage(error.message || t.auth.errors.generic);
         }

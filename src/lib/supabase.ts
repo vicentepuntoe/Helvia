@@ -38,6 +38,9 @@ export const supabase = createClient(url, key, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    // Usar 'implicit' si PKCE causa problemas, o 'pkce' para mayor seguridad
+    flowType: 'pkce',
+    // Deshabilitar PKCE si causa problemas (cambiar a 'implicit')
+    // flowType: 'implicit',
   }
 });

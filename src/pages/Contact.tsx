@@ -53,6 +53,13 @@ const Contact = () => {
                                    EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID' &&
                                    EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY';
 
+      // Debug: mostrar las variables de entorno
+      console.log('🔍 EmailJS Configuration Check:');
+      console.log('Service ID:', EMAILJS_SERVICE_ID ? `${EMAILJS_SERVICE_ID.substring(0, 10)}...` : 'NOT SET');
+      console.log('Template ID:', EMAILJS_TEMPLATE_ID ? `${EMAILJS_TEMPLATE_ID.substring(0, 10)}...` : 'NOT SET');
+      console.log('Public Key:', EMAILJS_PUBLIC_KEY ? `${EMAILJS_PUBLIC_KEY.substring(0, 10)}...` : 'NOT SET');
+      console.log('Is Configured:', isEmailJSConfigured);
+
       if (isEmailJSConfigured) {
         // Inicializar EmailJS
         emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -72,9 +79,7 @@ const Contact = () => {
           confirmation_message: t.contact.confirmationEmail,
         };
 
-        console.log('Enviando email con EmailJS...');
-        console.log('Service ID:', EMAILJS_SERVICE_ID);
-        console.log('Template ID:', EMAILJS_TEMPLATE_ID);
+        console.log('📧 Enviando email con EmailJS...');
         console.log('To Email:', formData.email);
 
         // Enviar email al usuario
@@ -84,7 +89,7 @@ const Contact = () => {
           templateParams
         );
 
-        console.log('Email enviado exitosamente:', response);
+        console.log('✅ Email enviado exitosamente:', response);
       } else {
         // Modo simulación: simular el envío del email para proyectos de portfolio
         console.warn('⚠️ EmailJS no está configurado - modo simulación');

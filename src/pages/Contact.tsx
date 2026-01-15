@@ -59,6 +59,8 @@ const Contact = () => {
       console.log('Template ID:', EMAILJS_TEMPLATE_ID ? `${EMAILJS_TEMPLATE_ID.substring(0, 10)}...` : 'NOT SET');
       console.log('Public Key:', EMAILJS_PUBLIC_KEY ? `${EMAILJS_PUBLIC_KEY.substring(0, 10)}...` : 'NOT SET');
       console.log('Is Configured:', isEmailJSConfigured);
+      console.log('Mode:', import.meta.env.MODE);
+      console.log('All VITE_ env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
 
       if (isEmailJSConfigured) {
         // Inicializar EmailJS

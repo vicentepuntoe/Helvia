@@ -3,12 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Debug: mostrar las variables de entorno (solo en desarrollo)
-if (import.meta.env.DEV) {
-  console.log('🔍 Supabase Configuration Check:');
-  console.log('URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET');
-  console.log('Anon Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT SET');
-}
+// Debug: mostrar las variables de entorno (también en producción para debugging)
+console.log('🔍 Supabase Configuration Check:');
+console.log('URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET');
+console.log('Anon Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT SET');
+console.log('Mode:', import.meta.env.MODE);
+console.log('All env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
 
 // Use placeholder values if credentials are not configured to prevent errors
 // The app will still work, but auth features won't function until credentials are set

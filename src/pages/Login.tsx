@@ -7,7 +7,7 @@ import Navbar from '../components/Navbar';
 
 const Login = () => {
   const { language } = useLanguage();
-  const { signIn, user } = useAuth();
+  const { signIn, user, resendConfirmationEmail } = useAuth();
   const navigate = useNavigate();
   const t = translations[language];
 
@@ -31,6 +31,8 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showResendEmail, setShowResendEmail] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -68,16 +70,21 @@ const Login = () => {
         console.error('Error message:', error.message);
         
         // Handle different error types
-        if (error.status === 404 || error.message.includes('NOT_FOUND')) {
+        const errorCode = (error as any).code;
+        
+        if (error.status === 404 || errorCode === 'NOT_FOUND') {
           setErrorMessage('Error: Proyecto de Supabase no encontrado. Por favor verifica la configuración.');
-        } else if (error.message.includes('Invalid login credentials') || 
-            error.message.includes('Invalid credentials') ||
-            error.status === 400) {
+        } else if (errorCode === 'email_not_confirmed' || error.message.includes('Email not confirmed')) {
+          setErrorMessage('Por favor confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.');
+          setShowResendEmail(true);
+        } else if (errorCode === 'invalid_credentials' || 
+            error.message.includes('Invalid login credentials') || 
+            error.message.includes('Invalid credentials')) {
           setErrorMessage(t.auth.errors.invalidCredentials);
-        } else if (error.message.includes('Email not confirmed')) {
-          setErrorMessage('Por favor confirma tu email antes de iniciar sesión');
+          setShowResendEmail(false);
         } else {
           setErrorMessage(error.message || t.auth.errors.generic);
+          setShowResendEmail(false);
         }
       } else {
         setSubmitStatus('success');
@@ -168,11 +175,41 @@ const Login = () => {
 
               {/* Error Message */}
               {submitStatus === 'error' && (
-                <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 dark:border-red-500 rounded-lg p-4 flex items-center gap-3 animate-fade-in-up">
-                  <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-sm text-red-600 dark:text-red-400">{errorMessage || t.auth.errors.generic}</p>
+                <div className="space-y-3">
+                  <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 dark:border-red-500 rounded-lg p-4 flex items-center gap-3 animate-fade-in-up">
+                    <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm text-red-600 dark:text-red-400">{errorMessage || t.auth.errors.generic}</p>
+                  </div>
+                  
+                  {/* Resend Confirmation Email */}
+                  {showResendEmail && (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-400 dark:border-blue-500 rounded-lg p-4 animate-fade-in-up">
+                      <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">
+                        ¿No recibiste el email de confirmación?
+                      </p>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setIsResendingEmail(true);
+                          const { error } = await resendConfirmationEmail(formData.email);
+                          if (error) {
+                            setErrorMessage('Error al reenviar el email. Por favor intenta más tarde.');
+                          } else {
+                            setErrorMessage('');
+                            setSubmitStatus('idle');
+                            alert('Email de confirmación reenviado. Por favor revisa tu bandeja de entrada.');
+                          }
+                          setIsResendingEmail(false);
+                        }}
+                        disabled={isResendingEmail || !formData.email}
+                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isResendingEmail ? 'Reenviando...' : 'Reenviar email de confirmación'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -13,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
+  resendConfirmationEmail: (email: string) => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -134,6 +135,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await supabase.auth.signOut();
   };
 
+  const resendConfirmationEmail = async (email: string) => {
+    try {
+      console.log('📧 Resending confirmation email to:', email);
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+      
+      if (error) {
+        console.error('❌ Error resending confirmation email:', error);
+      } else {
+        console.log('✅ Confirmation email sent successfully');
+      }
+      
+      return { error };
+    } catch (err) {
+      console.error('❌ Unexpected error resending confirmation email:', err);
+      return { 
+        error: { 
+          message: err instanceof Error ? err.message : 'An unexpected error occurred',
+          status: 500
+        } as any 
+      };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -141,6 +168,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signIn,
     signOut,
+    resendConfirmationEmail,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

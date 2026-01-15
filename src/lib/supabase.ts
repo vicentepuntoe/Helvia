@@ -18,6 +18,26 @@ const key = supabaseAnonKey || 'placeholder-key';
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase credentials not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file');
   console.warn('⚠️ Authentication features will not work until credentials are configured.');
+} else {
+  // Validate URL format
+  try {
+    new URL(url);
+    console.log('✅ Supabase URL is valid');
+  } catch (e) {
+    console.error('❌ Invalid Supabase URL format:', url);
+  }
+  
+  // Validate key format (should be a JWT-like string)
+  if (key.length < 50) {
+    console.warn('⚠️ Supabase Anon Key seems too short. Please verify it is correct.');
+  }
 }
 
-export const supabase = createClient(url, key);
+export const supabase = createClient(url, key, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    flowType: 'pkce'
+  }
+});

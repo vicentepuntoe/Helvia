@@ -55,19 +55,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      console.log('🔐 Attempting to sign up...');
+      console.log('Email:', email);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Not set');
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('❌ Sign up error:', error);
+        console.error('Error message:', error.message);
+        console.error('Error status:', error.status);
+      } else {
+        console.log('✅ Sign up successful');
+        if (data?.user && !data?.session) {
+          console.log('ℹ️ Email confirmation required');
+        }
+      }
+      
+      return { error };
+    } catch (err) {
+      console.error('❌ Unexpected error during sign up:', err);
+      return { 
+        error: { 
+          message: err instanceof Error ? err.message : 'An unexpected error occurred',
+          status: 500
+        } as any 
+      };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      console.log('🔐 Attempting to sign in...');
+      console.log('Email:', email);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Not set');
+      
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('❌ Sign in error:', error);
+        console.error('Error message:', error.message);
+        console.error('Error status:', error.status);
+      } else {
+        console.log('✅ Sign in successful');
+      }
+      
+      return { error };
+    } catch (err) {
+      console.error('❌ Unexpected error during sign in:', err);
+      return { 
+        error: { 
+          message: err instanceof Error ? err.message : 'An unexpected error occurred',
+          status: 500
+        } as any 
+      };
+    }
   };
 
   const signOut = async () => {

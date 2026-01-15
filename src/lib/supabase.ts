@@ -5,10 +5,16 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Debug: mostrar las variables de entorno (también en producción para debugging)
 console.log('🔍 Supabase Configuration Check:');
-console.log('URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET');
+console.log('URL:', supabaseUrl || 'NOT SET');
 console.log('Anon Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT SET');
 console.log('Mode:', import.meta.env.MODE);
-console.log('All env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
+console.log('All VITE_ env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
+
+// Validar que la URL no sea placeholder
+if (supabaseUrl && supabaseUrl.includes('placeholder')) {
+  console.error('❌ ERROR: Supabase URL is still using placeholder value!');
+  console.error('Please set VITE_SUPABASE_URL in your environment variables.');
+}
 
 // Use placeholder values if credentials are not configured to prevent errors
 // The app will still work, but auth features won't function until credentials are set

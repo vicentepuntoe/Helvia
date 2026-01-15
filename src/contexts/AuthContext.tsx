@@ -103,6 +103,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('❌ Sign in error:', error);
         console.error('Error message:', error.message);
         console.error('Error status:', error.status);
+        console.error('Error code:', (error as any).code);
+        
+        // Manejar error 404 específicamente
+        if (error.status === 404 || (error as any).code === 'NOT_FOUND') {
+          console.error('❌ CRITICAL: Supabase project not found (404)');
+          console.error('This usually means:');
+          console.error('1. The Supabase URL is incorrect');
+          console.error('2. The Supabase project was deleted');
+          console.error('3. The project ID in the URL is wrong');
+          console.error('Current URL:', import.meta.env.VITE_SUPABASE_URL);
+        }
       } else {
         console.log('✅ Sign in successful');
       }

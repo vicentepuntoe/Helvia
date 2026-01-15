@@ -68,7 +68,9 @@ const Login = () => {
         console.error('Error message:', error.message);
         
         // Handle different error types
-        if (error.message.includes('Invalid login credentials') || 
+        if (error.status === 404 || error.message.includes('NOT_FOUND')) {
+          setErrorMessage('Error: Proyecto de Supabase no encontrado. Por favor verifica la configuración.');
+        } else if (error.message.includes('Invalid login credentials') || 
             error.message.includes('Invalid credentials') ||
             error.status === 400) {
           setErrorMessage(t.auth.errors.invalidCredentials);

@@ -34,6 +34,13 @@ const Login = () => {
   const [showResendEmail, setShowResendEmail] = useState(false);
   const [isResendingEmail, setIsResendingEmail] = useState(false);
 
+  // Debug: log when showResendEmail changes
+  useEffect(() => {
+    if (submitStatus === 'error') {
+      console.log('🔍 Error status is error, showResendEmail:', showResendEmail);
+    }
+  }, [showResendEmail, submitStatus]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -71,21 +78,30 @@ const Login = () => {
         
         // Handle different error types
         const errorCode = (error as any).code;
+        console.log('🔍 Error code detected:', errorCode);
+        console.log('🔍 Error message:', error.message);
+        console.log('🔍 Error status:', error.status);
         
         if (error.status === 404 || errorCode === 'NOT_FOUND') {
           setErrorMessage('Error: Proyecto de Supabase no encontrado. Por favor verifica la configuración.');
+          setShowResendEmail(false);
         } else if (errorCode === 'email_not_confirmed' || error.message.includes('Email not confirmed')) {
+          console.log('✅ Email not confirmed detected - showing resend button');
           setErrorMessage('Por favor confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.');
           setShowResendEmail(true);
         } else if (errorCode === 'invalid_credentials' || 
             error.message.includes('Invalid login credentials') || 
             error.message.includes('Invalid credentials')) {
+          console.log('✅ Invalid credentials detected - hiding resend button');
           setErrorMessage(t.auth.errors.invalidCredentials);
           setShowResendEmail(false);
         } else {
+          console.log('⚠️ Unknown error type');
           setErrorMessage(error.message || t.auth.errors.generic);
           setShowResendEmail(false);
         }
+        
+        console.log('🔍 showResendEmail state:', showResendEmail);
       } else {
         setSubmitStatus('success');
         // Redirect to dashboard after successful login

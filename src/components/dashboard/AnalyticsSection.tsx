@@ -4,7 +4,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { translations } from '../../locales/translations';
 
 const AnalyticsSection = () => {
-  const { metrics, loading } = useAnalytics();
+  const { loading } = useAnalytics();
   const { conversations } = useConversations();
   const { language } = useLanguage();
   const t = translations[language];

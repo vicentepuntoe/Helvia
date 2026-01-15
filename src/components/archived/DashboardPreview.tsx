@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { translations, type Language } from '../locales/translations';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { translations, type Language } from '../../locales/translations';
 
 interface Message {
   id: string;

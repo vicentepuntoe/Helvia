@@ -3,9 +3,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useConversations, useMessages } from '../../hooks/useConversations';
 import { useAuth } from '../../contexts/AuthContext';
-import { getUserSettings, createOrUpdateUserSettings } from '../../lib/supabase-tables';
+import { getUserSettings } from '../../lib/supabase-tables';
 import { translations, type Language } from '../../locales/translations';
-import type { Conversation } from '../../lib/supabase-tables';
 
 type ColorTheme = 'Verde' | 'Azul' | 'Púrpura';
 
@@ -115,13 +114,6 @@ const ChatSection = () => {
     return initialMessages[lang];
   };
 
-  const detectLanguage = (message: string): Language => {
-    const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes('hola') || lowerMessage.includes('gracias') || lowerMessage.includes('por favor')) return 'es';
-    if (lowerMessage.includes('olá') || lowerMessage.includes('obrigado') || lowerMessage.includes('por favor')) return 'pt';
-    if (lowerMessage.includes('bonjour') || lowerMessage.includes('merci')) return 'fr';
-    return 'en';
-  };
 
   const getResponse = (userMessage: string, lang: Language): string => {
     const lowerMessage = userMessage.toLowerCase();

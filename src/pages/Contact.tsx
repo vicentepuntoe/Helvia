@@ -45,22 +45,30 @@ const Contact = () => {
     setErrorMessage('');
 
     try {
-      // Verificar si las credenciales están configuradas
-      const isEmailJSConfigured = EMAILJS_SERVICE_ID && 
-                                   EMAILJS_TEMPLATE_ID && 
-                                   EMAILJS_PUBLIC_KEY &&
-                                   EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID' &&
-                                   EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID' &&
-                                   EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY';
+      // Verificar si las credenciales están configuradas correctamente
+      // Verifica que existen, no están vacías, y tienen el formato correcto
+      const hasServiceId = EMAILJS_SERVICE_ID && 
+                           EMAILJS_SERVICE_ID.trim() !== '' && 
+                           EMAILJS_SERVICE_ID.startsWith('service_');
+      
+      const hasTemplateId = EMAILJS_TEMPLATE_ID && 
+                            EMAILJS_TEMPLATE_ID.trim() !== '' && 
+                            EMAILJS_TEMPLATE_ID.startsWith('template_');
+      
+      const hasPublicKey = EMAILJS_PUBLIC_KEY && 
+                           EMAILJS_PUBLIC_KEY.trim() !== '' && 
+                           EMAILJS_PUBLIC_KEY.length > 5; // Public keys suelen ser más largas
+      
+      const isEmailJSConfigured = hasServiceId && hasTemplateId && hasPublicKey;
 
       // Debug: mostrar las variables de entorno
       console.log('🔍 EmailJS Configuration Check:');
-      console.log('Service ID:', EMAILJS_SERVICE_ID ? `${EMAILJS_SERVICE_ID.substring(0, 10)}...` : 'NOT SET');
-      console.log('Template ID:', EMAILJS_TEMPLATE_ID ? `${EMAILJS_TEMPLATE_ID.substring(0, 10)}...` : 'NOT SET');
-      console.log('Public Key:', EMAILJS_PUBLIC_KEY ? `${EMAILJS_PUBLIC_KEY.substring(0, 10)}...` : 'NOT SET');
-      console.log('Is Configured:', isEmailJSConfigured);
+      console.log('Service ID:', EMAILJS_SERVICE_ID ? `${EMAILJS_SERVICE_ID.substring(0, 15)}...` : 'NOT SET', hasServiceId ? '✅' : '❌');
+      console.log('Template ID:', EMAILJS_TEMPLATE_ID ? `${EMAILJS_TEMPLATE_ID.substring(0, 15)}...` : 'NOT SET', hasTemplateId ? '✅' : '❌');
+      console.log('Public Key:', EMAILJS_PUBLIC_KEY ? `${EMAILJS_PUBLIC_KEY.substring(0, 15)}...` : 'NOT SET', hasPublicKey ? '✅' : '❌');
+      console.log('Is Configured:', isEmailJSConfigured ? '✅ YES' : '❌ NO');
       console.log('Mode:', import.meta.env.MODE);
-      console.log('All VITE_ env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
+      console.log('Available VITE_ env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
 
       if (isEmailJSConfigured) {
         // Inicializar EmailJS
